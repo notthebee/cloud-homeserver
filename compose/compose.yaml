@@ -124,7 +124,7 @@ services:
 
   jellyfin:
     container_name: jellyfin
-    image: linuxserver/jellyfin:latest
+    image: jellyfin/jellyfin:latest
     restart: unless-stopped
     labels:
       - 'traefik.enable=true'
