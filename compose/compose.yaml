@@ -22,14 +22,14 @@ services:
       - "--entrypoints.websecure.address=:443"
       - "--entrypoints.websecure.http.tls=true"
       - "--entrypoints.websecure.http.tls.certResolver=letsencrypt"
-      - "--entrypoints.websecure.http.tls.domains[0].main=oldmanyellsatcloud.duckdns.org"
-      - "--entrypoints.websecure.http.tls.domains[0].sans=*.oldmanyellsatcloud.duckdns.org"
+      - "--entrypoints.websecure.http.tls.domains[0].main=${MY_DOMAIN}"
+      - "--entrypoints.websecure.http.tls.domains[0].sans=*.${MY_DOMAIN}"
     volumes:
       - "../data/traefik/letsencrypt:/letsencrypt"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.api.rule=Host(`oldmanyellsatcloud.duckdns.org`)'
+      - 'traefik.http.routers.api.rule=Host(`${MY_DOMAIN}`)'
       - 'traefik.http.routers.api.entryPoints=websecure'
       - 'traefik.http.routers.api.service=api@internal'
       - 'traefik.http.routers.api.middlewares=authelia@docker'
@@ -53,7 +53,7 @@ services:
     container_name: authelia
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.authelia.rule=Host(`auth.oldmanyellsatcloud.duckdns.org`)'
+      - 'traefik.http.routers.authelia.rule=Host(`auth.${MY_DOMAIN}`)'
       - 'traefik.http.routers.authelia.entryPoints=websecure'
       - 'traefik.http.middlewares.authelia.forwardAuth.address=http://authelia:9091/api/authz/forward-auth'
       - 'traefik.http.middlewares.authelia.forwardAuth.trustForwardHeader=true'
@@ -69,7 +69,7 @@ services:
     environment:
       TZ: Europe/Amsterdam
       X_AUTHELIA_CONFIG_FILTERS: template
-      MY_DOMAIN: oldmanyellsatcloud.duckdns.org
+      MY_DOMAIN: ${MY_DOMAIN}
       AUTHELIA_IDENTITY_VALIDATION_RESET_PASSWORD_JWT_SECRET_FILE: /config/secrets/JWT_SECRET
       AUTHELIA_SESSION_SECRET_FILE: /config/secrets/SESSION_SECRET
       AUTHELIA_STORAGE_ENCRYPTION_KEY_FILE: /config/secrets/STORAGE_ENCRYPTION_KEY
@@ -80,7 +80,7 @@ services:
     restart: unless-stopped
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.sonarr.rule=Host(`sonarr.oldmanyellsatcloud.duckdns.org`)'
+      - 'traefik.http.routers.sonarr.rule=Host(`sonarr.${MY_DOMAIN}`)'
       - 'traefik.http.routers.sonarr.entryPoints=websecure'
       - 'traefik.http.routers.sonar.middlewares=authelia@docker'
     environment:
@@ -96,7 +96,7 @@ services:
     restart: unless-stopped
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.radarr.rule=Host(`radarr.oldmanyellsatcloud.duckdns.org`)'
+      - 'traefik.http.routers.radarr.rule=Host(`radarr.${MY_DOMAIN}`)'
       - 'traefik.http.routers.radarr.entryPoints=websecure'
       - 'traefik.http.routers.radarr.middlewares=authelia@docker'
     environment:
@@ -112,7 +112,7 @@ services:
     restart: unless-stopped
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.deluge.rule=Host(`deluge.oldmanyellsatcloud.duckdns.org`)'
+      - 'traefik.http.routers.deluge.rule=Host(`deluge.${MY_DOMAIN}`)'
       - 'traefik.http.routers.deluge.entryPoints=websecure'
       - 'traefik.http.routers.deluge.middlewares=authelia@docker'
     environment:
@@ -127,7 +127,7 @@ services:
     restart: unless-stopped
     labels:
       - 'traefik.enable=true'
-      - 'traefik.http.routers.jellyfin.rule=Host(`jellyfin.oldmanyellsatcloud.duckdns.org`)'
+      - 'traefik.http.routers.jellyfin.rule=Host(`jellyfin.${MY_DOMAIN}`)'
       - 'traefik.http.routers.jellyfin.entryPoints=websecure'
       - 'traefik.http.routers.jellyfin.middlewares=authelia@docker'
     environment:
