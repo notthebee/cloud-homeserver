@@ -41,6 +41,7 @@ services:
 
   authelia_redis:
     image: redis
+    restart: unless-stopped
     container_name: authelia_redis
 
   authelia_generate_secrets:
