@@ -78,6 +78,11 @@ services:
     container_name: sonarr
     image: linuxserver/sonarr:latest
     restart: unless-stopped
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.sonarr.rule=Host(`sonarr.oldmanyellsatcloud.duckdns.org`)'
+      - 'traefik.http.routers.sonarr.entryPoints=websecure'
+      - 'traefik.http.routers.api.middlewares=authelia@docker'
     environment:
       TZ: Europe/Amsterdam
     volumes:
@@ -89,6 +94,11 @@ services:
     container_name: radarr
     image: linuxserver/radarr:latest
     restart: unless-stopped
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.radarr.rule=Host(`radarr.oldmanyellsatcloud.duckdns.org`)'
+      - 'traefik.http.routers.radarr.entryPoints=websecure'
+      - 'traefik.http.routers.api.middlewares=authelia@docker'
     environment:
       TZ: Europe/Amsterdam
     volumes:
@@ -100,6 +110,11 @@ services:
     container_name: deluge
     image: linuxserver/deluge:latest
     restart: unless-stopped
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.deluge.rule=Host(`deluge.oldmanyellsatcloud.duckdns.org`)'
+      - 'traefik.http.routers.deluge.entryPoints=websecure'
+      - 'traefik.http.routers.api.middlewares=authelia@docker'
     environment:
       TZ: Europe/Amsterdam
     volumes:
@@ -110,6 +125,11 @@ services:
     container_name: jellyfin
     image: linuxserver/jellyfin:latest
     restart: unless-stopped
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.jellyfin.rule=Host(`jellyfin.oldmanyellsatcloud.duckdns.org`)'
+      - 'traefik.http.routers.jellyfin.entryPoints=websecure'
+      - 'traefik.http.routers.api.middlewares=authelia@docker'
     environment:
       TZ: Europe/Amsterdam
     volumes:
