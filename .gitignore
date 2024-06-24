@@ -1,2 +1,4 @@
-data/
+data/*
+!data/authelia
+data/authelia/*
 !data/authelia/configuration.yml

@@ -1,0 +1,41 @@
+---
+server:
+  address: 'tcp://:9091'
+
+log:
+  level: 'debug'
+
+totp:
+  issuer: 'authelia.com'
+
+authentication_backend:
+  file:
+    path: '/config/users_database.yml'
+
+access_control:
+  default_policy: 'one_factor'
+
+session:
+  cookies:
+    - name: 'authelia_session'
+      domain: '{{ env "MY_DOMAIN" }}'
+      authelia_url: 'https://auth.{{ env "MY_DOMAIN" }}'
+      expiration: '1 hour'
+      inactivity: '5 minutes'
+
+  redis:
+    host: 'authelia_redis'
+    port: 6379
+
+regulation:
+  max_retries: 3
+  find_time: '2 minutes'
+  ban_time: '5 minutes'
+
+storage:
+  local:
+    path: '/config/db.sqlite3'
+
+notifier:
+  filesystem:
+    filename: /config/notification.txt
