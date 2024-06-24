@@ -131,7 +131,6 @@ services:
       - 'traefik.http.routers.jellyfin.rule=Host(`jellyfin.${MY_DOMAIN}`)'
       - 'traefik.http.routers.jellyfin.entryPoints=websecure'
       - 'traefik.http.routers.jellyfin.middlewares=authelia@docker'
-      - "traefik.http.services.jellyfin.loadbalancer.server.port=8096" 
     environment:
       TZ: Europe/Amsterdam
     volumes:
