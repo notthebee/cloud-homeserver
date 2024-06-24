@@ -82,7 +82,7 @@ services:
       - 'traefik.enable=true'
       - 'traefik.http.routers.sonarr.rule=Host(`sonarr.oldmanyellsatcloud.duckdns.org`)'
       - 'traefik.http.routers.sonarr.entryPoints=websecure'
-      - 'traefik.http.routers.api.middlewares=authelia@docker'
+      - 'traefik.http.routers.sonar.middlewares=authelia@docker'
     environment:
       TZ: Europe/Amsterdam
     volumes:
@@ -98,7 +98,7 @@ services:
       - 'traefik.enable=true'
       - 'traefik.http.routers.radarr.rule=Host(`radarr.oldmanyellsatcloud.duckdns.org`)'
       - 'traefik.http.routers.radarr.entryPoints=websecure'
-      - 'traefik.http.routers.api.middlewares=authelia@docker'
+      - 'traefik.http.routers.radarr.middlewares=authelia@docker'
     environment:
       TZ: Europe/Amsterdam
     volumes:
@@ -114,7 +114,7 @@ services:
       - 'traefik.enable=true'
       - 'traefik.http.routers.deluge.rule=Host(`deluge.oldmanyellsatcloud.duckdns.org`)'
       - 'traefik.http.routers.deluge.entryPoints=websecure'
-      - 'traefik.http.routers.api.middlewares=authelia@docker'
+      - 'traefik.http.routers.deluge.middlewares=authelia@docker'
     environment:
       TZ: Europe/Amsterdam
     volumes:
@@ -129,7 +129,7 @@ services:
       - 'traefik.enable=true'
       - 'traefik.http.routers.jellyfin.rule=Host(`jellyfin.oldmanyellsatcloud.duckdns.org`)'
       - 'traefik.http.routers.jellyfin.entryPoints=websecure'
-      - 'traefik.http.routers.api.middlewares=authelia@docker'
+      - 'traefik.http.routers.jellyfin.middlewares=authelia@docker'
     environment:
       TZ: Europe/Amsterdam
     volumes:
