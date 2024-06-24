@@ -1,23 +1,79 @@
 services:
   proxy:
-    container_name: proxy
-    image: 'jc21/nginx-proxy-manager:latest'
+    image: traefik
+    container_name: traefik
+    depends_on: 
+      - authelia
     restart: unless-stopped
-    ports:
-      - '80:80'
-      - '81:81'
-      - '443:443'
+    command:
+      - "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--certificatesresolvers.letsencrypt.acme.dnschallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.dnschallenge.provider=duckdns"
+      - "--certificatesresolvers.letsencrypt.acme.email=mail@mail.com"
+      - "--certificatesresolvers.letsencrypt.acme.dnschallenge.disablePropagationCheck=true"
+      - "--certificatesresolvers.letsencrypt.acme.dnschallenge.resolvers=1.1.1.1:53,8.8.8.8:53"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.websecure.http.tls=true"
+      - "--entrypoints.websecure.http.tls.certResolver=letsencrypt"
+      - "--entrypoints.websecure.http.tls.domains[0].main=oldmanyellsatcloud.duckdns.org"
+      - "--entrypoints.websecure.http.tls.domains[0].sans=*.oldmanyellsatcloud.duckdns.org"
     volumes:
-      - ../data/proxy/data:/data
-      - ../data/proxy/letsencrypt:/etc/letsencrypt
+      - "../data/traefik/letsencrypt:/letsencrypt"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.api.rule=Host(`oldmanyellsatcloud.duckdns.org`)'
+      - 'traefik.http.routers.api.entryPoints=websecure'
+      - 'traefik.http.routers.api.service=api@internal'
+      - 'traefik.http.routers.api.middlewares=authelia@docker'
+    ports:
+      - "443:443"
+      - "80:80"
+    environment:
+      DUCKDNS_TOKEN: "85347f1f-dfa9-4ba4-b7d8-b8f2659139b5"
+
+  authelia_redis:
+    image: redis
+    container_name: authelia_redis
+
+  authelia_generate_secrets:
+    build: generate_secrets
+    volumes:
+      - ../data/authelia/secrets:/secrets
+
   authelia:
     image: authelia/authelia
     container_name: authelia
+    labels:
+      - 'traefik.enable=true'
+      - 'traefik.http.routers.authelia.rule=Host(`auth.oldmanyellsatcloud.duckdns.org`)'
+      - 'traefik.http.routers.authelia.entryPoints=websecure'
+      - 'traefik.http.middlewares.authelia.forwardAuth.address=http://authelia:9091/api/authz/forward-auth'
+      - 'traefik.http.middlewares.authelia.forwardAuth.trustForwardHeader=true'
+      - 'traefik.http.middlewares.authelia.forwardAuth.authResponseHeaders=Remote-User,Remote-Groups,Remote-Email,Remote-Name'
+    depends_on:
+      authelia_generate_secrets:
+        condition: service_completed_successfully
     volumes:
       - ../data/authelia:/config
     restart: unless-stopped
+    expose: 
+      - 9091
     environment:
       TZ: Europe/Amsterdam
+      X_AUTHELIA_CONFIG_FILTERS: template
+      MY_DOMAIN: oldmanyellsatcloud.duckdns.org
+      AUTHELIA_IDENTITY_VALIDATION_RESET_PASSWORD_JWT_SECRET_FILE: /config/secrets/JWT_SECRET
+      AUTHELIA_SESSION_SECRET_FILE: /config/secrets/SESSION_SECRET
+      AUTHELIA_STORAGE_ENCRYPTION_KEY_FILE: /config/secrets/STORAGE_ENCRYPTION_KEY
+
   sonarr:
     container_name: sonarr
     image: linuxserver/sonarr:latest
@@ -28,6 +84,7 @@ services:
       - ../data/sonarr:/config
       - /mnt/media/TV:/tv
       - /mnt/media/Downloads:/downloads
+
   radarr:
     container_name: radarr
     image: linuxserver/radarr:latest
@@ -38,6 +95,7 @@ services:
       - ../data/radarr:/config
       - /mnt/media/Movies:/movies
       - /mnt/media/Downloads:/downloads
+
   deluge:
     container_name: deluge
     image: linuxserver/deluge:latest
@@ -47,6 +105,7 @@ services:
     volumes:
       - ../data/deluge:/config
       - /mnt/media/Downloads:/downloads
+
   jellyfin:
     container_name: jellyfin
     image: linuxserver/jellyfin:latest
