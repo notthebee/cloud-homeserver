@@ -1,0 +1,59 @@
+services:
+  proxy:
+    container_name: proxy
+    image: 'jc21/nginx-proxy-manager:latest'
+    restart: unless-stopped
+    ports:
+      - '80:80'
+      - '81:81'
+      - '443:443'
+    volumes:
+      - ../data/proxy/data:/data
+      - ../data/proxy/letsencrypt:/etc/letsencrypt
+  authelia:
+    image: authelia/authelia
+    container_name: authelia
+    volumes:
+      - ../data/authelia:/config
+    restart: unless-stopped
+    environment:
+      TZ: Europe/Amsterdam
+  sonarr:
+    container_name: sonarr
+    image: linuxserver/sonarr:latest
+    restart: unless-stopped
+    environment:
+      TZ: Europe/Amsterdam
+    volumes:
+      - ../data/sonarr:/config
+      - /mnt/media/TV:/tv
+      - /mnt/media/Downloads:/downloads
+  radarr:
+    container_name: radarr
+    image: linuxserver/radarr:latest
+    restart: unless-stopped
+    environment:
+      TZ: Europe/Amsterdam
+    volumes:
+      - ../data/radarr:/config
+      - /mnt/media/Movies:/movies
+      - /mnt/media/Downloads:/downloads
+  deluge:
+    container_name: deluge
+    image: linuxserver/deluge:latest
+    restart: unless-stopped
+    environment:
+      TZ: Europe/Amsterdam
+    volumes:
+      - ../data/deluge:/config
+      - /mnt/media/Downloads:/downloads
+  jellyfin:
+    container_name: jellyfin
+    image: linuxserver/jellyfin:latest
+    restart: unless-stopped
+    environment:
+      TZ: Europe/Amsterdam
+    volumes:
+      - ../data/jellyfin:/config
+      - /mnt/media/Movies:/movies
+      - /mnt/media/TV:/tv
