@@ -83,7 +83,7 @@ services:
       - 'traefik.enable=true'
       - 'traefik.http.routers.sonarr.rule=Host(`sonarr.${MY_DOMAIN}`)'
       - 'traefik.http.routers.sonarr.entryPoints=websecure'
-      - 'traefik.http.routers.sonar.middlewares=authelia@docker'
+      - 'traefik.http.routers.sonarr.middlewares=authelia@docker'
     environment:
       TZ: Europe/Amsterdam
     volumes:
@@ -130,7 +130,6 @@ services:
       - 'traefik.enable=true'
       - 'traefik.http.routers.jellyfin.rule=Host(`jellyfin.${MY_DOMAIN}`)'
       - 'traefik.http.routers.jellyfin.entryPoints=websecure'
-      - 'traefik.http.routers.jellyfin.middlewares=authelia@docker'
     environment:
       TZ: Europe/Amsterdam
     volumes:
